@@ -1,7 +1,10 @@
 const path = require('path')
 const webpack = require('webpack')
+const HtmlPlugin = require('html-webpack-plugin')
 
-module.exports = () => {
+// TODO: Env opts
+module.exports = ({
+} = {}) => {
     const rules = [
         {
             test: /\.jsx?$/,
@@ -16,9 +19,12 @@ module.exports = () => {
     ]
 
     const plugins = [
-        new EnvironmentPlugin({
+        new HtmlPlugin({
+            template: path.resolve('./app/index.html')
+        }),
+        new webpack.EnvironmentPlugin({
             NODE_ENV: 'development',
-            DEBUG: undefined,
+            DEBUG: "",
         })
     ]
 
@@ -28,10 +34,30 @@ module.exports = () => {
         },
         output: {
             path: path.resolve('./build'),
+            filename: '[name].bundle.js',
+            chunkFilename: '[id].chunk.js',
             publicPath: '/',
+        },
+        resolve: {
+            alias: {
+                app: path.resolve('./app')
+            }
         },
         plugins,
         module: { rules }
+    }
+
+    if (process.env.NODE_ENV !== 'production') {
+        config.devtool = 'inline-source-map'
+        config.entry.app.unshift(
+            'webpack-hot-middleware/client'
+        )
+        plugins.push(
+            new webpack.HotModuleReplacementPlugin(),
+            new webpack.NamedModulesPlugin()
+        )
+    } else {
+        config.devtool = 'source-map'
     }
 
     return config

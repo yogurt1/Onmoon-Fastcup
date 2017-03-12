@@ -2,15 +2,24 @@
     "presets": [
         ["env", {
             "modules": false,
-            "debug": true,
+            "debug": false,
+            "useBuiltIns": true,
+            "loose": true,
             "targets": {
+                "node": "current",
                 "chrome": 56,
-                "firefox": 52
-            }
+                "firefox": 53
+            },
+            "exclude": [
+                "transform-regenerator"
+            ]
         }],
         "react",
     ],
     "plugins": [
+        "syntax-dynamic-import",
+        "transform-class-properties",
+        "transform-decorators-legacy",
         "transform-object-rest-spread"
     ],
     "env": {
